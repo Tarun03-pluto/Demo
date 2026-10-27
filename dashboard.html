@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>User Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --accent: #0F766E;
+    --accent-dark: #0B5E57;
+    --accent-tint: #E6F4F1;
+    --bg: #F4F6F8;
+    --card: #FFFFFF;
+    --border: #E3E7ED;
+    --ink: #14181F;
+    --muted: #5B6472;
+    --text-2: #3D4654;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'DM Sans', system-ui, sans-serif; background: var(--bg); color: var(--ink); }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; }
+  button:hover { filter: brightness(0.96); }
+  button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  h1, h2, p { margin: 0; }
+
+  /* Navbar */
+  .navbar { background: var(--card); border-bottom: 1px solid var(--border); }
+  .nav-inner { max-width: 1180px; margin: 0 auto; padding: 12px 24px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 32px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; }
+  .logo { width: 32px; height: 32px; border-radius: 8px; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .nav-links { display: flex; flex-wrap: wrap; gap: 4px; }
+  .nav-links a { padding: 10px 14px; border-radius: 8px; color: var(--text-2); font-weight: 500; font-size: 15px; }
+  .nav-links a:hover { background: var(--bg); }
+  .nav-links a.active { background: var(--accent-tint); color: var(--accent-dark); font-weight: 600; }
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+  .icon-btn { width: 44px; height: 44px; border-radius: 10px; border: 1px solid var(--border); background: var(--card); color: var(--text-2); display: flex; align-items: center; justify-content: center; }
+  .avatar { border-radius: 999px; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 600; flex: none; }
+  .avatar.sm { width: 40px; height: 40px; font-size: 14px; }
+  .avatar.lg { width: 64px; height: 64px; font-size: 22px; }
+  .user-mini { display: flex; align-items: center; gap: 10px; font-weight: 500; font-size: 15px; }
+
+  /* Layout */
+  main { max-width: 1180px; margin: 0 auto; padding: 32px 24px 56px; display: flex; flex-direction: column; gap: 24px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px; }
+  .card h2 { font-size: 18px; font-weight: 700; }
+
+  /* Welcome */
+  .welcome { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 20px; padding: 28px 32px; border-radius: 16px; }
+  .welcome .date { font-size: 14px; font-weight: 500; color: var(--muted); }
+  .welcome h1 { font-size: 34px; line-height: 1.15; letter-spacing: -0.02em; margin: 8px 0; }
+  .welcome p { font-size: 16px; line-height: 1.5; color: var(--text-2); }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 12px; }
+  .btn { min-height: 44px; padding: 0 20px; border-radius: 10px; font-size: 15px; font-weight: 600; border: 1px solid #CDD3DC; background: #fff; color: var(--ink); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  /* Stats */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+  .stat { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+  .stat-head { display: flex; align-items: center; justify-content: space-between; }
+  .stat-label { font-size: 14px; font-weight: 500; color: var(--muted); }
+  .chip { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex: none; }
+  .stat-value { font-size: 32px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
+  .stat-note { font-size: 13px; font-weight: 500; color: var(--muted); }
+  .stat-note.up { color: #0F6B45; }
+  .bar { height: 8px; border-radius: 999px; background: var(--border); overflow: hidden; margin-bottom: 6px; }
+  .bar > div { height: 100%; width: 64%; background: var(--accent); border-radius: 999px; }
+  .c-teal { background: var(--accent-tint); color: var(--accent-dark); }
+  .c-amber { background: #FDF1DC; color: #8A5200; }
+  .c-blue { background: #E8EEFB; color: #2A4BA0; }
+  .c-purple { background: #F1EAF8; color: #5E2F8F; }
+
+  /* Profile + actions */
+  .row { display: flex; flex-wrap: wrap; gap: 16px; align-items: stretch; }
+  .profile { flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 20px; }
+  .profile-head { display: flex; align-items: center; gap: 16px; }
+  .profile-name { font-size: 18px; font-weight: 600; }
+  .profile-email { font-size: 14px; color: var(--muted); overflow-wrap: anywhere; }
+  .info-list { border-top: 1px solid var(--border); }
+  .info-row { display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .info-row:last-child { border-bottom: 0; }
+  .info-row span:first-child { color: var(--muted); }
+  .info-row span:last-child { font-weight: 500; }
+  .right-col { flex: 2 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+  .actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-top: 16px; }
+  .action { display: flex; align-items: center; gap: 12px; padding: 14px; min-height: 64px; text-align: left; border-radius: 12px; border: 1px solid var(--border); background: #fff; color: var(--ink); }
+  .action .chip { width: 40px; height: 40px; }
+  .action strong { display: block; font-size: 15px; font-weight: 600; }
+  .action small { display: block; font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+  /* Activity */
+  .activity-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+  .activity-head a { font-size: 14px; font-weight: 600; color: var(--accent-dark); }
+  .activity-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .activity-item:last-child { border-bottom: 0; }
+  .dot { width: 8px; height: 8px; border-radius: 999px; background: var(--accent); flex: none; }
+  .activity-item .text { flex: 1; min-width: 0; }
+  .activity-item time { font-size: 13px; color: var(--muted); flex: none; }
+</style>
+</head>
+<body>
+
+<!-- Navigation bar -->
+<header class="navbar">
+  <nav class="nav-inner" aria-label="Main">
+    <div class="brand"><div class="logo">N</div><span>Northwind</span></div>
+    <div class="nav-links">
+      <a href="#" class="active" aria-current="page">Dashboard</a>
+      <a href="#">Projects</a>
+      <a href="#">Messages</a>
+      <a href="#">Reports</a>
+      <a href="#">Settings</a>
+    </div>
+    <div class="nav-right">
+      <button class="icon-btn" type="button" aria-label="Notifications">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+      </button>
+      <div class="user-mini"><div class="avatar sm" aria-hidden="true">AM</div><span>Alex Morgan</span></div>
+    </div>
+  </nav>
+</header>
+
+<main>
+
+  <!-- Welcome section -->
+  <section class="card welcome">
+    <div>
+      <span class="date">Tuesday, October 27</span>
+      <h1>Welcome back, Alex</h1>
+      <p>You have 5 tasks due today and 8 unread messages.</p>
+    </div>
+    <div class="btn-row">
+      <button class="btn" type="button">View calendar</button>
+      <button class="btn primary" type="button">New project</button>
+    </div>
+  </section>
+
+  <!-- Stat cards -->
+  <section class="stats" aria-label="Overview">
+    <div class="card stat">
+      <div class="stat-head"><span class="stat-label">Active projects</span>
+        <div class="chip c-teal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div></div>
+      <span class="stat-value">12</span>
+      <span class="stat-note up">+2 this week</span>
+    </div>
+    <div class="card stat">
+      <div class="stat-head"><span class="stat-label">Tasks due today</span>
+        <div class="chip c-amber"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div></div>
+      <span class="stat-value">5</span>
+      <span class="stat-note">2 high priority</span>
+    </div>
+    <div class="card stat">
+      <div class="stat-head"><span class="stat-label">Unread messages</span>
+        <div class="chip c-blue"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div></div>
+      <span class="stat-value">8</span>
+      <span class="stat-note">3 from your team</span>
+    </div>
+    <div class="card stat">
+      <div class="stat-head"><span class="stat-label">Storage used</span>
+        <div class="chip c-purple"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg></div></div>
+      <span class="stat-value">64%</span>
+      <div><div class="bar"><div></div></div><span class="stat-note">6.4 GB of 10 GB</span></div>
+    </div>
+  </section>
+
+  <section class="row">
+
+    <!-- User info -->
+    <div class="card profile">
+      <h2>Your profile</h2>
+      <div class="profile-head">
+        <div class="avatar lg" aria-hidden="true">AM</div>
+        <div>
+          <div class="profile-name">Alex Morgan</div>
+          <div class="profile-email">alex.morgan@example.com</div>
+        </div>
+      </div>
+      <div class="info-list">
+        <div class="info-row"><span>Role</span><span>Product Designer</span></div>
+        <div class="info-row"><span>Plan</span><span>Pro</span></div>
+        <div class="info-row"><span>Member since</span><span>March 2024</span></div>
+        <div class="info-row"><span>Time zone</span><span>IST (UTC+05:30)</span></div>
+      </div>
+      <button class="btn" type="button">Edit profile</button>
+    </div>
+
+    <div class="right-col">
+
+      <!-- Quick actions -->
+      <div class="card">
+        <h2>Quick actions</h2>
+        <div class="actions">
+          <button class="action" type="button">
+            <span class="chip c-teal"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg></span>
+            <span><strong>Create project</strong><small>Start from scratch</small></span>
+          </button>
+          <button class="action" type="button">
+            <span class="chip c-blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/></svg></span>
+            <span><strong>Invite teammate</strong><small>Share by email</small></span>
+          </button>
+          <button class="action" type="button">
+            <span class="chip c-amber"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg></span>
+            <span><strong>Upload file</strong><small>Add documents</small></span>
+          </button>
+          <button class="action" type="button">
+            <span class="chip c-purple"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></span>
+            <span><strong>Generate report</strong><small>Weekly summary</small></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Recent activity -->
+      <div class="card">
+        <div class="activity-head"><h2>Recent activity</h2><a href="#">View all</a></div>
+        <div class="activity-item"><span class="dot"></span><span class="text">Priya commented on <strong>Website redesign</strong></span><time>12 min ago</time></div>
+        <div class="activity-item"><span class="dot"></span><span class="text">You completed <strong>Q4 brand audit</strong></span><time>2 hours ago</time></div>
+        <div class="activity-item"><span class="dot"></span><span class="text">Sam uploaded <strong>pricing-v3.pdf</strong></span><time>Yesterday</time></div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+</body>
+</html>
