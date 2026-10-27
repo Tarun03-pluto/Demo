@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EV Insights | Electric Vehicle Market Performance &amp; Insights</title>
+<meta name="description" content="EV Insights presents an interactive Tableau Public dashboard and story on electric vehicle market performance.">
+<meta name="theme-color" content="#121212">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23121212'/%3E%3Cpath d='M36 8 18 36h12l-4 20 20-30H33z' fill='%23ffa726'/%3E%3C/svg%3E">
+<style>
+:root{--bg:#121212;--alt:#181818;--card:#1f1f1f;--line:#333;--text:#f5f5f5;--muted:#b3b3b3;--accent:#ffa726;--accent2:#f57c00;--r:14px;--nav:64px;font-family:'Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:var(--nav)}
+body{margin:0;background:var(--bg);color:var(--text);line-height:1.6}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+h1,h2,h3{line-height:1.2;margin:0 0 .5rem}
+h1{font-size:clamp(2.2rem,5.5vw,4rem);letter-spacing:-.02em;max-width:16ch}
+h2{font-size:clamp(1.6rem,3.2vw,2.3rem)}
+h3{font-size:1.1rem}
+p{margin:0 0 1rem}
+code{background:#2a2a2a;padding:.1em .4em;border-radius:6px;font-size:.9em}
+.wrap{max-width:1180px;margin:0 auto;padding:0 1.25rem}
+.muted{color:var(--muted)}.small{font-size:.9rem}
+.skip{position:absolute;left:-999px;top:8px;background:var(--accent);color:#000;padding:.5rem 1rem;border-radius:8px;z-index:100}
+.skip:focus{left:8px}
+.nav{position:sticky;top:0;z-index:50;height:var(--nav);background:rgba(18,18,18,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav-in{max-width:1180px;margin:0 auto;padding:0 1.25rem;height:100%;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:.5rem;color:var(--accent);font-weight:700;font-size:1.15rem;text-decoration:none}
+nav.links{display:flex;gap:.25rem}
+nav.links a{color:var(--muted);text-decoration:none;padding:.45rem .75rem;border-radius:8px;font-size:.95rem}
+nav.links a:hover,nav.links a.active{color:var(--text);background:#262626}
+nav.links a.active{box-shadow:inset 0 -2px 0 var(--accent)}
+.toggle{display:none;background:none;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:.4rem .9rem;font:inherit;cursor:pointer}
+.hero{padding:clamp(3rem,9vw,7rem) 0;background:radial-gradient(900px 400px at 85% 10%,rgba(255,167,38,.16),transparent 60%),var(--bg)}
+.hero-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:2rem;align-items:center}
+.lead{color:var(--muted);font-size:1.15rem;max-width:56ch;margin:1.25rem 0 2rem}
+.bolt{width:100%;max-width:340px;justify-self:center}
+.actions{display:flex;flex-wrap:wrap;gap:.75rem}
+.btn{display:inline-block;padding:.75rem 1.4rem;border-radius:10px;font-weight:600;text-decoration:none;border:1px solid transparent;transition:transform .15s}
+.btn:hover{transform:translateY(-1px)}
+.btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#111}
+.btn.ghost{border-color:var(--line);color:var(--text)}
+.btn.ghost:hover{border-color:var(--accent)}
+.section{padding:clamp(3rem,7vw,5.5rem) 0}
+.section.alt{background:var(--alt);border-block:1px solid var(--line)}
+.head{display:flex;justify-content:space-between;align-items:flex-end;gap:1.5rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.head p{max-width:62ch;margin:0}
+.sub{margin-top:2.5rem}
+.grid{display:grid;gap:1rem;margin-top:1.25rem}
+.grid.two{grid-template-columns:repeat(2,1fr)}.grid.three{grid-template-columns:repeat(3,1fr)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:1.4rem}
+.card p{color:var(--muted)}.card a{font-size:.95rem}
+.notice{background:#2a2113;border:1px solid #5c4413;border-radius:var(--r);padding:1.2rem 1.4rem}
+.embed{position:relative;width:100%;height:min(900px,85vh);min-height:520px;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:#fff}
+.embed iframe{width:100%;height:100%;border:0;display:block}
+.status{position:absolute;inset:0;display:grid;place-content:center;text-align:center;background:var(--card);padding:1.5rem;z-index:1;pointer-events:none}
+.status a{pointer-events:auto}
+.spinner{width:34px;height:34px;border:4px solid #3a3a3a;border-top-color:var(--accent);border-radius:50%;margin:0 auto .75rem;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.steps{list-style:none;counter-reset:s;padding:0;margin:1.5rem 0 0;display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+.steps li{counter-increment:s;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:var(--r);padding:1.1rem 1.3rem 1.1rem 4rem;position:relative}
+.steps li::before{content:counter(s);position:absolute;left:1.2rem;top:1rem;font-size:1.6rem;font-weight:700;color:var(--accent)}
+.steps p{color:var(--muted);margin:0}
+.badges{list-style:none;display:flex;flex-wrap:wrap;gap:.75rem;padding:0;margin:1.25rem 0 0}
+.badges li{padding:.55rem 1.1rem;border:1px solid var(--line);border-radius:999px;background:var(--card);font-weight:600}
+footer{padding:2.5rem 0;border-top:1px solid var(--line)}
+.foot{display:flex;justify-content:space-between;gap:1.5rem;flex-wrap:wrap}
+.foot p{margin:.25rem 0 0}.foot-links{display:flex;gap:1.25rem}
+@media(max-width:860px){
+.hero-grid{grid-template-columns:1fr}.bolt{max-width:220px;justify-self:start;order:-1}
+.grid.two,.grid.three,.steps{grid-template-columns:1fr}
+.toggle{display:block}
+nav.links{display:none;position:absolute;top:var(--nav);left:0;right:0;flex-direction:column;background:var(--bg);border-bottom:1px solid var(--line);padding:.75rem 1.25rem 1rem}
+nav.links.open{display:flex}.embed{min-height:480px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.spinner{animation-duration:3s}.btn{transition:none}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav"><div class="nav-in">
+  <a class="brand" href="#home"><svg width="22" height="22" viewBox="0 0 64 64" aria-hidden="true"><path d="M36 6 16 36h13l-4 22 23-32H34z" fill="currentColor"/></svg>EV Insights</a>
+  <button class="toggle" id="toggle" aria-expanded="false" aria-controls="links">Menu</button>
+  <nav class="links" id="links" aria-label="Primary">
+    <a href="#home">Home</a><a href="#about">About</a><a href="#dashboard">Dashboard</a><a href="#story">Story</a><a href="#features">Analytics</a><a href="#methodology">Methodology</a><a href="#tech">Technologies</a>
+  </nav>
+</div></header>
+
+<main id="main">
+<section id="home" class="hero"><div class="wrap hero-grid">
+  <div>
+    <h1>Electric Vehicle Market Performance &amp; Insights</h1>
+    <p class="lead">An interactive look at how electric vehicle manufacturers compare on price, battery capacity, driving range and country of origin, built on a published Tableau Public dashboard.</p>
+    <div class="actions"><a class="btn primary" href="#dashboard">Explore Dashboard</a><a class="btn ghost" href="#story">Explore Story</a></div>
+  </div>
+  <svg class="bolt" viewBox="0 0 200 200" role="img" aria-label="Lightning bolt inside a charge ring">
+    <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffb74d"/><stop offset="1" stop-color="#f57c00"/></linearGradient></defs>
+    <circle cx="100" cy="100" r="86" fill="none" stroke="#2c2c2c" stroke-width="10"/>
+    <circle cx="100" cy="100" r="86" fill="none" stroke="url(#g)" stroke-width="10" stroke-linecap="round" stroke-dasharray="420 540" transform="rotate(-90 100 100)"/>
+    <path d="M112 32 62 110h34l-8 58 52-82h-36z" fill="url(#g)"/>
+  </svg>
+</div></section>
+
+<section id="about" class="section"><div class="wrap">
+  <h2>About the project</h2>
+  <div class="grid two">
+    <article class="card"><h3>What it analyzes</h3><p>How electric vehicles compare across manufacturers, prices, battery capacity, driving range and the countries where they are made.</p></article>
+    <article class="card"><h3>Why EV analysis matters</h3><p>Buyers, manufacturers and policymakers make decisions about cost, charging and range. Comparing vehicles side by side makes those trade-offs visible.</p></article>
+    <article class="card"><h3>Why visualize the data</h3><p>Charts reveal patterns, outliers and relationships that are hard to spot in a spreadsheet of rows.</p></article>
+    <article class="card"><h3>How you can use it</h3><p>Filter and hover inside the dashboard to compare manufacturers and vehicle attributes, then follow the story for a guided walkthrough.</p></article>
+  </div>
+</div></section>
+
+<section id="dashboard" class="section alt"><div class="wrap">
+  <div class="head">
+    <div><h2>Interactive dashboard</h2><p class="muted">The published EV Market Insights dashboard from Tableau Public. All figures come from the dashboard itself; this page does not recompute or alter them.</p></div>
+    <a class="btn primary" id="dash-open" target="_blank" rel="noopener noreferrer">Open Dashboard in new tab</a>
+  </div>
+  <div class="embed" id="dash-embed"></div>
+</div></section>
+
+<section id="story" class="section"><div class="wrap">
+  <div class="head">
+    <div><h2>Tableau story</h2><p class="muted">A guided, step-by-step walk through the EV market analysis.</p></div>
+    <a class="btn primary" id="story-open" target="_blank" rel="noopener noreferrer" hidden>Open Story in new tab</a>
+  </div>
+  <div class="embed" id="story-embed" hidden></div>
+  <div class="notice" id="story-note" role="note"><strong>Story not configured yet.</strong> Paste your published Story URLs into the <code>CONFIG</code> block at the bottom of this file (<code>STORY.publicUrl</code> and <code>STORY.embedUrl</code>) and the embed and button will appear here.</div>
+  <h3 class="sub">Themes to look for</h3>
+  <p class="muted">These are general reading prompts, not verified findings. Confirm any conclusion against the dashboard and story.</p>
+  <div class="grid three">
+    <article class="card"><h3>Market growth</h3><p>Look for how vehicle counts or sales change over time and between regions.</p></article>
+    <article class="card"><h3>Manufacturer comparison</h3><p>Compare manufacturers on volume, pricing and range to see who leads on which measure.</p></article>
+    <article class="card"><h3>Battery technology</h3><p>Relate battery capacity and type to driving range and price.</p></article>
+    <article class="card"><h3>Pricing</h3><p>Check how price varies by manufacturer and whether higher prices coincide with longer range.</p></article>
+    <article class="card"><h3>Driving range</h3><p>Compare range across vehicles, and consider efficiency alongside raw range.</p></article>
+  </div>
+</div></section>
+
+<section id="features" class="section alt"><div class="wrap">
+  <h2>Analytics features</h2>
+  <p class="muted">Each card describes a type of analysis. Open the dashboard to see which are shown and explore them with real data.</p>
+  <div class="grid three">
+    <article class="card"><h3>Manufacturer Sales Analysis</h3><p>Compare how manufacturers perform on sales or vehicle volume.</p><a href="#dashboard">View in dashboard</a></article>
+    <article class="card"><h3>EV Pricing Comparison</h3><p>See how prices differ across manufacturers and vehicle types.</p><a href="#dashboard">View in dashboard</a></article>
+    <article class="card"><h3>Country-wise EV Distribution</h3><p>Explore where electric vehicles are made or sold.</p><a href="#dashboard">View in dashboard</a></article>
+    <article class="card"><h3>Battery Capacity Analysis</h3><p>Understand how battery size varies and what it means for range.</p><a href="#dashboard">View in dashboard</a></article>
+    <article class="card"><h3>Driving Range Comparison</h3><p>Compare how far different vehicles travel on a full charge.</p><a href="#dashboard">View in dashboard</a></article>
+    <article class="card"><h3>Manufacturer Distribution</h3><p>View each manufacturer’s share of the vehicles in the data.</p><a href="#dashboard">View in dashboard</a></article>
+    <article class="card"><h3>EV Efficiency Analysis</h3><p>Relate battery capacity to range to judge energy efficiency.</p><a href="#dashboard">View in dashboard</a></article>
+  </div>
+</div></section>
+
+<section id="methodology" class="section"><div class="wrap">
+  <h2>Methodology</h2>
+  <p class="muted">The general workflow this project follows, from raw data to a published website.</p>
+  <ol class="steps">
+    <li><h3>Data collection</h3><p>Gather an EV dataset from a documented source.</p></li>
+    <li><h3>Data preparation</h3><p>Clean missing values, duplicates and inconsistent formats.</p></li>
+    <li><h3>Exploratory analysis</h3><p>Profile distributions and relationships between fields.</p></li>
+    <li><h3>Data visualization</h3><p>Choose chart types that suit each question.</p></li>
+    <li><h3>Dashboard development</h3><p>Combine charts and filters into an interactive Tableau dashboard.</p></li>
+    <li><h3>Story creation</h3><p>Sequence key views into a guided Tableau story.</p></li>
+    <li><h3>Web integration</h3><p>Embed the dashboard and story in this website.</p></li>
+    <li><h3>Testing and documentation</h3><p>Check responsiveness and embeds, then document the project.</p></li>
+  </ol>
+</div></section>
+
+<section id="tech" class="section alt"><div class="wrap">
+  <h2>Technologies used</h2>
+  <ul class="badges"><li>JavaScript</li><li>HTML5</li><li>CSS3</li><li>Tableau Public</li><li>GitHub</li><li>GitHub Pages</li></ul>
+</div></section>
+</main>
+
+<footer><div class="wrap foot">
+  <div><strong>EV Insights</strong><p class="muted">Electric Vehicle Market Performance &amp; Insights</p><p class="muted small">&copy; <span id="year"></span> EV Insights. College project.</p></div>
+  <div class="foot-links"><a id="repo-link" target="_blank" rel="noopener noreferrer" hidden>GitHub repository</a><a href="#home">Back to top</a></div>
+</div></footer>
+
+<script>
+/* ===== CONFIG: edit these values ===== */
+var CONFIG = {
+  DASHBOARD: {
+    publicUrl: 'https://public.tableau.com/app/profile/tarun.yadav2299/viz/EV_Market_Insights/Dashboard2?publish=yes',
+    // If the embed fails, paste the URL from Tableau Public > Share > Link here.
+    embedUrl: 'https://public.tableau.com/views/EV_Market_Insights/Dashboard2?:showVizHome=no&:embed=y'
+  },
+  STORY: { publicUrl: '', embedUrl: '' },
+  REPO_URL: '' // e.g. 'https://github.com/<user>/<repo>'
+};
+/* ===================================== */
+
+function mountEmbed(el, title, embedUrl, publicUrl) {
+  var status = document.createElement('div');
+  status.className = 'status';
+  status.setAttribute('role', 'status');
+  status.innerHTML = '<span class="spinner" aria-hidden="true"></span><p>Loading ' + title + ' from Tableau Public…</p>';
+  var frame = document.createElement('iframe');
+  frame.title = title;
+  frame.src = embedUrl;
+  frame.loading = 'lazy';
+  frame.allowFullscreen = true;
+  var timer = setTimeout(function () {
+    var p = document.createElement('p');
+    p.className = 'muted';
+    p.innerHTML = 'This is taking longer than expected. Check your connection, or <a target="_blank" rel="noopener noreferrer" href="' + publicUrl + '">open it directly on Tableau Public</a>.';
+    status.appendChild(p);
+  }, 12000);
+  frame.addEventListener('load', function () { clearTimeout(timer); status.remove(); });
+  el.append(status, frame);
+}
+
+mountEmbed(document.getElementById('dash-embed'), 'EV Market Insights dashboard', CONFIG.DASHBOARD.embedUrl, CONFIG.DASHBOARD.publicUrl);
+document.getElementById('dash-open').href = CONFIG.DASHBOARD.publicUrl;
+
+if (CONFIG.STORY.embedUrl) {
+  var se = document.getElementById('story-embed');
+  se.hidden = false;
+  document.getElementById('story-note').hidden = true;
+  mountEmbed(se, 'EV Market Insights story', CONFIG.STORY.embedUrl, CONFIG.STORY.publicUrl || CONFIG.STORY.embedUrl);
+}
+if (CONFIG.STORY.publicUrl) {
+  var so = document.getElementById('story-open');
+  so.href = CONFIG.STORY.publicUrl;
+  so.hidden = false;
+}
+if (CONFIG.REPO_URL) {
+  var rl = document.getElementById('repo-link');
+  rl.href = CONFIG.REPO_URL;
+  rl.hidden = false;
+}
+document.getElementById('year').textContent = new Date().getFullYear();
+
+/* Mobile menu */
+var toggle = document.getElementById('toggle'), links = document.getElementById('links');
+function setMenu(open) {
+  links.classList.toggle('open', open);
+  toggle.setAttribute('aria-expanded', open);
+  toggle.textContent = open ? 'Close' : 'Menu';
+}
+toggle.addEventListener('click', function () { setMenu(!links.classList.contains('open')); });
+links.addEventListener('click', function (e) { if (e.target.tagName === 'A') setMenu(false); });
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setMenu(false); });
+
+/* Active nav link */
+var navLinks = Array.prototype.slice.call(links.querySelectorAll('a'));
+var io = new IntersectionObserver(function (entries) {
+  entries.forEach(function (en) {
+    if (!en.isIntersecting) return;
+    navLinks.forEach(function (a) {
+      var on = a.getAttribute('href') === '#' + en.target.id;
+      a.classList.toggle('active', on);
+      if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+    });
+  });
+}, { rootMargin: '-45% 0px -50% 0px' });
+navLinks.forEach(function (a) {
+  var s = document.querySelector(a.getAttribute('href'));
+  if (s) io.observe(s);
+});
+</script>
+</body>
+</html>
